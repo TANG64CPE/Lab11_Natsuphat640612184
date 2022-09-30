@@ -7,17 +7,23 @@ import { checkToken } from "../../../../backendLibs/checkToken";
 
 export default function roomIdMessageRoute(req, res) {
   if (req.method === "GET") {
-    //check token
-
-    //get roomId from url
+    const username = checkToken(req);
+    if (!username) {
+      return res.status(401).json({
+        ok: false,
+        message: "You don't permission to access this api",
+      });
+    }
     const roomId = req.query.roomId;
-
+    if (roomId === -1)
+      return res
+        .status(404)
+        .json({ ok: false, message: "Room ID does not exit" });
     const rooms = readChatRoomsDB();
-
-    //check if roomId exist
-
-    //find room and return
-    //...
+    const findRoom = rooms.find((x) => x.roomId === roomId);
+    if (!findRoom)
+      return res.status(400).json({ ok: false, message: "Invalid Room ID" });
+    return res.json({ ok: true, findRoom });
   } else if (req.method === "POST") {
     //check token
 
